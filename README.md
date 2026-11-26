@@ -50,3 +50,12 @@ python3 -m http.server 8000 --bind 127.0.0.1
 題庫的 PDF 連結仍引用原套件的 `../2_教材/` 及多份尚未提供的 PDF（含 v2 教材）。本專案目前只保存上述 v3 教材，因此部分教材連結無法開啟。不能直接以 v3 取代 v2，因為頁碼可能不同。
 
 詳細操作見 [輔考系統說明](exam-web/README.md)；圖卡製作區見 [flash-cards 說明](flash-cards/README.md)。
+
+
+## GitHub Pages
+
+網站入口：<https://iamso1.github.io/ipas-ai/>。
+
+`.github/workflows/pages.yml` 在推送 `main` 或手動執行時，將 `exam-web/` 部署到網站根目錄；不發布 `flash-cards/`。GitHub repo 的 Settings → Pages → Source 應設為 GitHub Actions。
+
+線上首次使用仍需載入題庫並選取本機圖卡資料夾；題庫可由 repo 下載，圖卡可下載 repo ZIP 後解壓選取。部署不會自動將本機瀏覽器的作答紀錄同步到線上來源，請先匯出備份再匯入。
