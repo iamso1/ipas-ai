@@ -1167,7 +1167,8 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
   <aside class="panel cards-study-sidebar" aria-label="考點圖卡設定與清單">
    <div class="cards-sidebar-heading"><h2>▤ 考點圖卡</h2><p>左側選圖卡，右側直接閱讀，不再跳出視窗。</p></div>
    <div class="cards-folder-actions">
-    <button type="button" class="btn primary" id="flashcardChoose">選取圖卡資料夾</button>
+    <button type="button" class="btn primary" id="flashcardCloudImport">匯入雲端圖卡</button>
+    <button type="button" class="btn" id="flashcardChoose">選取圖卡資料夾</button>
     <input id="flashcardFolderInput" type="file" webkitdirectory directory multiple hidden aria-label="選取考點圖卡資料夾">
     <a class="flashcard-folder-link" id="flashcardFolderLink" href="assets/flashcards/" target="_blank" rel="noopener noreferrer">📁 開啟資料夾</a>
     <button type="button" class="btn" id="flashcardClear" hidden>清除圖卡預覽</button>
@@ -1220,7 +1221,7 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
 <button class="btn" id="shuffle">隨機排序</button><button class="btn" id="ordered">依題號排序</button>
 <div id="progressLabel" class="progress-label" style="margin-top:16px"></div><div class="bar"><div id="progressBar"></div></div><p id="summary" class="summary"></p><div id="questionGrid" class="question-grid"></div>
 <p class="notice">綠：答對 · 紅：答錯 · 橙：未計分 · ★：收藏</p><button class="btn" id="export">匯出紀錄</button><button class="btn" id="import">匯入紀錄</button><input type="file" id="importFile" accept="application/json,.json" hidden><button class="btn" id="reset" style="margin-top:12px">清除作答紀錄</button><p id="storageNotice" class="notice" role="status"></p></aside>
-<section class="card"><div class="tools"><button class="btn" id="loadBank">載入 JSON 題庫</button><input id="bankFile" type="file" accept=".json,application/json" hidden><input id="oldBankFile" type="file" accept=".json,application/json" hidden><span id="bankNotice" class="notice" role="status">請先載入 JSON 題庫</span><button class="btn" id="favorite">☆ 收藏</button><button class="btn" id="retry">重新作答本題</button><button class="btn" id="knowledgeReturn" type="button" hidden>← 返回知識補強</button><button class="recovery-link" id="compareOldBank" type="button" title="核對修改前 JSON 的題目、選項及答案，再安全找回舊紀錄">核對舊版 JSON／找回紀錄</button></div><span id="wrongDrillHint" hidden></span><div class="badge" id="number"></div><div id="question"></div><div id="options"></div><div id="feedback" class="feedback" aria-live="polite"></div><p class="shortcut-hint">←／→ 換題 · Alt+1～8 選項 · Alt+Enter 提交 · Alt+F 收藏</p><div class="actions"><div class="left-actions"><button class="btn" id="prev">← 上一題</button><button class="btn" id="next">下一題 →</button></div><button class="btn primary" id="check">提交答案</button></div><p class="notice" id="bankDisclaimer">答案與解析將於提交後顯示。</p></section><section id="wrongDrillWorkspace" class="drill-workspace" hidden aria-label="歷史錯題與收藏題專項練習">
+<section class="card"><div class="tools"><button class="btn primary" id="cloudBankImport" type="button">匯入雲端 JSON 題庫</button><button class="btn" id="loadBank">載入本機 JSON 題庫</button><input id="bankFile" type="file" accept=".json,application/json" hidden><input id="oldBankFile" type="file" accept=".json,application/json" hidden><span id="bankNotice" class="notice" role="status">請先載入 JSON 題庫</span><button class="btn" id="favorite">☆ 收藏</button><button class="btn" id="retry">重新作答本題</button><button class="btn" id="knowledgeReturn" type="button" hidden>← 返回知識補強</button><button class="recovery-link" id="compareOldBank" type="button" title="核對修改前 JSON 的題目、選項及答案，再安全找回舊紀錄">核對舊版 JSON／找回紀錄</button></div><span id="wrongDrillHint" hidden></span><div class="badge" id="number"></div><div id="question"></div><div id="options"></div><div id="feedback" class="feedback" aria-live="polite"></div><p class="shortcut-hint">←／→ 換題 · Alt+1～8 選項 · Alt+Enter 提交 · Alt+F 收藏</p><div class="actions"><div class="left-actions"><button class="btn" id="prev">← 上一題</button><button class="btn" id="next">下一題 →</button></div><button class="btn primary" id="check">提交答案</button></div><p class="notice" id="bankDisclaimer">答案與解析將於提交後顯示。</p></section><section id="wrongDrillWorkspace" class="drill-workspace" hidden aria-label="歷史錯題與收藏題專項練習">
  <div class="drill-shell">
   <aside class="drill-side panel" aria-label="專項練習設定與題號導覽">
    <div class="drill-side-heading">專項練習設定</div>
@@ -2338,7 +2339,34 @@ document.addEventListener('keydown',e=>{if(el('practiceView').hidden)return;
  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)&&!e.altKey)return;if(e.ctrlKey||e.metaKey||e.shiftKey)return;if(!e.altKey){if(e.code==='ArrowLeft'){e.preventDefault();move(-1);}if(e.code==='ArrowRight'){e.preventDefault();move(1);}return;}if(e.code==='Enter'){e.preventDefault();if(!el('check').disabled)el('check').click();}if(e.code==='KeyF'){e.preventDefault();if(!el('favorite').disabled)el('favorite').click();}if(/^Digit[1-8]$/.test(e.code)){const input=document.querySelectorAll('input[name="option"]')[+e.code.slice(5)-1];if(input&&!input.disabled){e.preventDefault();input.click();}} });
  el('compareOldBank').onclick=()=>el('oldBankFile').click();
  el('oldBankFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{ipasVerifyOldJsonAndRecover(JSON.parse(await f.text()));}catch(err){alert('舊版題庫核對失敗：'+err.message);}e.target.value='';};
- el('loadBank').onclick=()=>el('bankFile').click();el('bankFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{loadBank(JSON.parse(await file.text()),file.name);}catch(err){alert('題庫載入失敗：'+err.message);}e.target.value='';};
+let cloudBankImportToken=0;
+el('cloudBankImport').onclick=async()=>{
+ const button=el('cloudBankImport'),token=++cloudBankImportToken;
+ button.disabled=true;button.textContent='匯入中…';
+ el('bankNotice').textContent='正在讀取雲端 JSON 題庫…';
+ const path='assets/question-banks/ipas-question-bank-v68.json';
+ const remote='https://raw.githubusercontent.com/iamso1/ipas-ai/main/'+path;
+ const urls=location.protocol==='file:'?[remote]:[path,remote];
+ let imported=false;
+ try{
+  for(const url of urls){
+   let data;
+   try{
+    const response=await fetch(url,{cache:'no-cache'});
+    if(!response.ok)throw Error('HTTP '+response.status);
+    data=await response.json();
+    normalizeBank(data);
+   }catch(_){continue;}
+   if(token!==cloudBankImportToken)return;
+   loadBank(data,'雲端題庫｜ipas-question-bank-v68.json');
+   imported=true;break;
+  }
+  if(!imported&&token===cloudBankImportToken)el('bankNotice').textContent='雲端題庫匯入失敗，請確認網路後重試，或載入本機 JSON。';
+ }catch(err){
+  if(token===cloudBankImportToken)el('bankNotice').textContent='題庫載入失敗：'+err.message;
+ }finally{button.disabled=false;button.textContent='匯入雲端 JSON 題庫';}
+};
+ el('loadBank').onclick=()=>el('bankFile').click();el('bankFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;++cloudBankImportToken;try{loadBank(JSON.parse(await file.text()),file.name);}catch(err){alert('題庫載入失敗：'+err.message);}e.target.value='';};
 
 // v18 備考首頁：只讀取目前的 quiz/state，不變更既有 localStorage 儲存鍵與進度結構。
 const FALLBACK_EXAM_DATE='2026-11-07';
@@ -3763,8 +3791,8 @@ function flashcardImageExists(url){
  });
 }
 const FLASHCARD_REPO_BASE='https://raw.githubusercontent.com/iamso1/ipas-ai/main/assets/flashcards/';
-async function flashcardRestoreFromManifest(){
- if(flashcardItems.length)return false;
+async function flashcardRestoreFromManifest(force=false){
+ if(flashcardItems.length&&!force)return false;
  const token=++flashcardRestoreToken;
  el('flashcardProgressNotice').textContent='正在載入專案圖卡…';
  const bases=location.protocol==='file:'?[FLASHCARD_REPO_BASE]:['assets/flashcards/',FLASHCARD_REPO_BASE];
@@ -3775,7 +3803,7 @@ async function flashcardRestoreFromManifest(){
    const data=await response.json();
    if(data?.version!==1||!Array.isArray(data.files)||!data.files.length||data.files.length>10000||
       data.files.some(key=>!flashcardSafeRelativeKey(key)||!FLASHCARD_IMAGE.test(key)))throw Error('圖卡清單格式錯誤');
-   if(token!==flashcardRestoreToken||flashcardItems.length)return false;
+   if(token!==flashcardRestoreToken||(!force&&flashcardItems.length))return false;
    const list=[...new Set(data.files.map(flashcardCanonicalKey))].sort((a,b)=>a.localeCompare(b,'en',{numeric:true}));
    flashcardRelease();
    for(const key of list){
@@ -3791,10 +3819,14 @@ async function flashcardRestoreFromManifest(){
    el('flashcardProgressNotice').textContent='✓ 已自動載入 '+list.length+' 張專案圖卡；也可選取本機資料夾切換來源。';
    return true;
   }catch(_){
-   if(token!==flashcardRestoreToken||flashcardItems.length)return false;
+   if(token!==flashcardRestoreToken||(!force&&flashcardItems.length))return false;
   }
  }
  if(token!==flashcardRestoreToken)return false;
+ if(force){
+  el('flashcardProgressNotice').textContent='雲端圖卡匯入失敗，已保留目前圖卡，請確認網路或選取本機資料夾。';
+  return false;
+ }
  if(await flashcardRestoreSavedManifest())return true;
  if(token===flashcardRestoreToken||!flashcardProgress.manifest.length)
   el('flashcardProgressNotice').textContent='無法載入專案圖卡，請確認網路連線，或選取本機圖卡資料夾。';
@@ -3929,6 +3961,12 @@ function flashcardDownloadFavorites(){
  const data=JSON.stringify(flashcardBackupData(),null,2),blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
  a.href=url;a.download='iPAS_考點圖卡收藏與進度.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+el('flashcardCloudImport').onclick=async()=>{
+ const button=el('flashcardCloudImport');
+ button.disabled=true;button.textContent='匯入中…';
+ try{await flashcardRestoreFromManifest(true);}
+ finally{button.disabled=false;button.textContent='匯入雲端圖卡';}
+};
 el('flashcardChoose').onclick=()=>el('flashcardFolderInput').click();
 el('flashcardClear').onclick=()=>{
  ++flashcardRestoreToken;flashcardRelease();el('flashcardFolderInput').value='';el('flashcardSearch').value='';
