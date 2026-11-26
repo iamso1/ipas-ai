@@ -1191,7 +1191,7 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
     <div class="flashcard-favorites-status"><span id="flashcardFavoriteStatus" role="status" aria-live="polite">最愛圖卡：0 份</span>
      <span class="flashcard-backup-actions"><button class="btn" id="flashcardExportFavorites" type="button">匯出圖卡紀錄</button><button class="btn" id="flashcardImportFavorites" type="button">匯入圖卡紀錄</button><input id="flashcardFavoritesFile" type="file" accept="application/json,.json" hidden aria-label="匯入考點圖卡收藏與瀏覽進度"></span>
     </div>
-    <p class="flashcard-help">首次使用請選取圖卡資料夾；之後會嘗試依上次清單自動從相對路徑載入。新增圖卡時再重新選取即可。也可開啟 <a id="flashcardParentFolderLink" href="assets/flashcards/" target="_blank" rel="noopener noreferrer">圖卡資料夾</a>。</p>
+    <p class="flashcard-help">預設自動載入專案內的圖卡；也可選取本機資料夾閱讀其他圖片或 PDF。也可開啟 <a id="flashcardParentFolderLink" href="assets/flashcards/" target="_blank" rel="noopener noreferrer">圖卡資料夾</a>。</p>
    </div>
   </aside>
   <section class="card cards-study-main" aria-label="考點圖卡閱讀區">
@@ -3762,7 +3762,45 @@ function flashcardImageExists(url){
   setTimeout(()=>complete(false),3000);
  });
 }
+const FLASHCARD_REPO_BASE='https://raw.githubusercontent.com/iamso1/ipas-ai/main/assets/flashcards/';
 async function flashcardRestoreFromManifest(){
+ if(flashcardItems.length)return false;
+ const token=++flashcardRestoreToken;
+ el('flashcardProgressNotice').textContent='正在載入專案圖卡…';
+ const bases=location.protocol==='file:'?[FLASHCARD_REPO_BASE]:['assets/flashcards/',FLASHCARD_REPO_BASE];
+ for(const base of bases){
+  try{
+   const response=await fetch(base+'manifest.json',{cache:'no-cache'});
+   if(!response.ok)throw Error('圖卡清單讀取失敗');
+   const data=await response.json();
+   if(data?.version!==1||!Array.isArray(data.files)||!data.files.length||data.files.length>10000||
+      data.files.some(key=>!flashcardSafeRelativeKey(key)||!FLASHCARD_IMAGE.test(key)))throw Error('圖卡清單格式錯誤');
+   if(token!==flashcardRestoreToken||flashcardItems.length)return false;
+   const list=[...new Set(data.files.map(flashcardCanonicalKey))].sort((a,b)=>a.localeCompare(b,'en',{numeric:true}));
+   flashcardRelease();
+   for(const key of list){
+    const file={name:key.split('/').at(-1),webkitRelativePath:'flashcards/'+key};
+    flashcardItems.push({file,url:flashcardRelativeUrl(base,key),isPdf:false,objectUrl:false});
+   }
+   flashcardProgress.manifest=list;
+   flashcardProgress.folderName='flashcards';
+   flashcardSaveProgress();
+   el('flashcardToolbar').hidden=false;el('flashcardClear').hidden=false;
+   el('flashcardSearch').value='';
+   flashcardRender();flashcardPreviewLastWithoutChangingProgress();
+   el('flashcardProgressNotice').textContent='✓ 已自動載入 '+list.length+' 張專案圖卡；也可選取本機資料夾切換來源。';
+   return true;
+  }catch(_){
+   if(token!==flashcardRestoreToken||flashcardItems.length)return false;
+  }
+ }
+ if(token!==flashcardRestoreToken)return false;
+ if(await flashcardRestoreSavedManifest())return true;
+ if(token===flashcardRestoreToken||!flashcardProgress.manifest.length)
+  el('flashcardProgressNotice').textContent='無法載入專案圖卡，請確認網路連線，或選取本機圖卡資料夾。';
+ return false;
+}
+async function flashcardRestoreSavedManifest(){
  if(flashcardItems.length)return false;
  const list=flashcardProgress.manifest.filter(key=>flashcardSafeRelativeKey(key)&&(FLASHCARD_IMAGE.test(key)||FLASHCARD_PDF.test(key)));
  if(!list.length)return false;
@@ -3955,7 +3993,7 @@ el('flashcardFavoritesFile').onchange=async event=>{
  event.target.value='';
 };
 flashcardRender();
-// 使用既有閱讀進度中的檔名清單嘗試載入；失敗才需手動選取資料夾。
+// 優先載入 repo 圖卡清單；離線時嘗試上次清單，並保留手動選取功能。
 void flashcardRestoreFromManifest();
 
 updateCountdown();setInterval(updateCountdown,1000);

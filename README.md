@@ -32,9 +32,9 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 1. 開啟 <http://localhost:8000/>。
 2. 點「載入 JSON 題庫」，選取 `assets/question-banks/ipas-question-bank-v68.json`。
-3. 切換到考點圖卡，點「選取圖卡資料夾」，選取 `assets/flashcards/`，一次載入全部分類。
+3. 考點圖卡預設自動載入專案內的 99 張圖卡；可點「選取圖卡資料夾」改讀本機圖片或 PDF。
 
-首次使用與新增檔案後仍需選取資料夾。後續會依上次清單嘗試從 `assets/flashcards/` 自動還原。舊中文分類、英文描述檔名的收藏、閱讀進度與匯入備份會轉換為新路徑；題庫 ID 和作答儲存鍵未改動。
+圖卡清單由 `assets/flashcards/manifest.json` 管理；新增／移除圖卡時需同步更新其中的相對路徑。HTTP／Pages 優先使用同站資產；直接開啟本機 HTML 或同站清單讀取失敗時，改讀 GitHub `main` 的公開 raw 檔案，因此需網路連線。舊分類與檔名仍會轉換，保留收藏及閱讀進度。
 
 ## 備份與來源
 
@@ -48,4 +48,4 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 遠端：<https://github.com/iamso1/ipas-ai>。網站：<https://iamso1.github.io/ipas-ai/>。
 
-在本目錄操作 Git。推送 `main` 後，workflow 會將本目錄發布至 Pages；Source 設為 GitHub Actions。資產路徑採相對路徑，支援 `/ipas-ai/` 專案網址。線上使用時可先從 repo 下載 ZIP，解壓後選取題庫和圖卡；尚未加入首次自動載入資產功能。
+在本目錄操作 Git。推送 `main` 後，workflow 會將本目錄發布至 Pages；Source 設為 GitHub Actions。資產路徑採相對路徑，支援 `/ipas-ai/` 專案網址。線上圖卡會自動載入；題庫仍需手動選取，可先從 repo 下載 JSON 或 ZIP。
