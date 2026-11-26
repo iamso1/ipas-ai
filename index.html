@@ -987,18 +987,19 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
 #cardsView .flashcard-favorites-status{display:grid;gap:3px;margin:0}
 #cardsView .flashcard-backup-actions{display:flex;gap:4px;flex-wrap:wrap}
 #cardsView .flashcard-backup-actions .btn{padding:3px 5px;font-size:11px}
-#cardsView .cards-main-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;border-bottom:1px solid #e7edf5;padding-bottom:13px}
-#cardsView .cards-current-title{min-width:0;flex:1 1 240px}
-#cardsView .cards-current-title h2{margin:4px 0 0;font-size:clamp(17px,2vw,23px);line-height:1.55;overflow-wrap:anywhere;color:#243d61}
-#cardsView .cards-main-actions{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
-#cardsView .cards-main-actions .btn{font-size:13px;padding:9px 12px;white-space:nowrap}
+#cardsView .cards-main-head{display:flex;justify-content:space-between;align-items:center;gap:5px 8px;flex-wrap:wrap;border-bottom:1px solid #e7edf5;padding-bottom:6px}
+#cardsView .cards-current-title{display:flex;align-items:center;gap:7px;min-width:0;flex:1 1 160px}
+#cardsView .cards-current-title .flashcard-count{flex:0 0 auto;white-space:nowrap;font-size:11px;line-height:1.3}
+#cardsView .cards-current-title h2{flex:1;min-width:0;margin:0;font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#243d61}
+#cardsView .cards-main-actions{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+#cardsView .cards-main-actions .btn{font-size:11px;padding:5px 7px;min-height:28px;line-height:1.2;white-space:nowrap}
 #cardsView #flashcardDialogFavorite[aria-pressed="true"]{color:#8b590c;background:#fff8e8;border-color:#e8c67d}
 #cardsView .cards-open-pdf{border:1px solid #bed4f2;background:#f4f8ff;color:#2155a0;text-decoration:none;border-radius:9px;font-weight:650}
-#cardsView .cards-display{display:flex;align-items:center;justify-content:center;min-height:450px;height:min(69vh,940px);background:#f6f9fe;border:1px solid #e1e8f3;border-radius:11px;overflow:auto;margin-top:16px;outline-offset:3px}
+#cardsView .cards-display{display:flex;align-items:center;justify-content:center;min-height:450px;height:min(69vh,940px);background:#f6f9fe;border:1px solid #e1e8f3;border-radius:11px;overflow:auto;margin-top:8px;outline-offset:3px}
 #cardsView .cards-display img{width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
 /* v24.8：僅圖卡圖片使用兩種閱讀比例；PDF 仍依原本內嵌閱讀器顯示。 */
-#cardsView .cards-fit-controls{display:inline-flex;align-items:center;gap:3px;padding:3px;border:1px solid #d7e2ef;border-radius:9px;background:#f7faff}
-#cardsView .cards-fit-controls .btn{font-size:12px;padding:6px 9px;border:1px solid transparent;background:transparent;color:#456281;border-radius:7px;min-height:31px}
+#cardsView .cards-fit-controls{display:inline-flex;align-items:center;gap:2px;padding:2px;border:1px solid #d7e2ef;border-radius:9px;background:#f7faff}
+#cardsView .cards-fit-controls .btn{font-size:11px;padding:4px 6px;border:1px solid transparent;background:transparent;color:#456281;border-radius:6px;min-height:24px}
 #cardsView .cards-fit-controls .btn[aria-pressed="true"]{background:#e4efff;color:#1953aa;border-color:#a3c4f4}
 /* v24.9：長圖在右側閱讀欄位自然往下延伸，由頁面捲動，避免內外兩層捲軸。
    僅套用圖片；PDF 仍維持原有內嵌閱讀器高度與行為。 */
@@ -1009,14 +1010,26 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
 #cardsView .cards-display [hidden]{display:none!important}
 #cardsView .cards-empty-viewer{display:flex;flex-direction:column;align-items:center;gap:9px;padding:40px 14px;text-align:center;color:#697d96;font-size:14px}
 #cardsView .cards-empty-viewer strong{font-size:18px;color:#2d4e78}
-#cardsView .cards-main-footer{display:flex;justify-content:center;gap:11px;margin-top:16px}
-#cardsView .cards-main-footer .btn{min-width:116px}
+#cardsView .cards-main-footer{display:flex;justify-content:center;gap:8px;margin-top:8px}
+#cardsView .cards-main-footer .btn{min-width:100px;padding:7px 12px;font-size:12px}
 #cardsView .cards-main-tip{color:#64748b;font-size:12px;line-height:1.7;margin:12px 0 0}
 #cardsView .flashcard-empty{padding:23px 10px;font-size:12px}
 @media(max-width:860px){#cardsView .cards-study-layout{grid-template-columns:275px minmax(0,1fr);gap:13px}}
 @media(max-width:760px){#cardsView.cards-study-view{padding:0 14px 28px;margin:14px 0}#cardsView .cards-study-layout{grid-template-columns:minmax(0,1fr);gap:12px}#cardsView .cards-study-sidebar{position:static;max-height:min(46vh,410px);overflow-y:auto;scrollbar-gutter:auto}#cardsView .cards-study-main{min-height:0}#cardsView .cards-display{height:min(60vh,580px);min-height:280px}#cardsView .cards-display iframe{min-height:280px}#cardsView .cards-nav-list{grid-template-columns:repeat(2,minmax(0,1fr))}#cardsView .cards-nav-name{font-size:11px}}
 @media(max-width:400px){#cardsView .cards-nav-list{grid-template-columns:1fr}#cardsView .cards-display{height:min(56vh,500px);min-height:255px}#cardsView .cards-main-actions .btn{font-size:12px;padding:7px 9px}}
 
+/* Reserve room for the compact title, navigation and page chrome in fit-height mode. */
+#cardsView .cards-study-main{padding:12px;min-height:0}
+#cardsView .cards-display[data-fit="height"][data-media="image"]{height:min(69vh,calc(100dvh - 240px));min-height:160px}
+@media(max-width:400px){#cardsView .cards-main-actions .btn{font-size:11px;padding:4px 6px;min-height:26px}}
+</style><style>
+#cardsView .cards-folder-controls{display:flex;gap:8px;margin:8px 0 14px}
+#cardsView .cards-folder-controls .btn{flex:1;padding:7px;font-size:12px}
+#cardsView .cards-folder{min-width:0;border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden;margin:7px 0}
+#cardsView .cards-folder>summary{cursor:pointer;padding:11px 10px;background:#f1f6fc;color:#243d5c;font-weight:700;font-size:13px;overflow-wrap:anywhere}
+#cardsView .cards-folder>summary:focus-visible{outline:2px solid var(--blue);outline-offset:-3px}
+#cardsView .cards-folder-content{padding:4px 5px 5px 10px;border-left:2px solid #dbe7f5;margin-left:9px}
+#cardsView .cards-folder-content .cards-folder{margin:5px 0}
 </style></head><body>
 <header>
   <div class="site-heading"><h1 id="bankTitle">通用題庫練習系統</h1><p id="bankSubtitle">請載入 JSON 題庫開始練習</p><p id="loadedBankName" role="status">目前題庫：尚未載入</p></div>
@@ -1182,6 +1195,9 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
     <span id="flashcardProgressNotice" class="flashcard-help" role="status"></span>
    </div>
    <div id="flashcardToolbar" class="cards-filter-panel" hidden>
+    <label for="flashcardFolderFilter">圖卡範圍</label>
+    <select id="flashcardFolderFilter" aria-label="選擇圖卡資料夾"><option value="">全部圖卡</option></select>
+    <div class="cards-folder-controls"><button type="button" class="btn" id="flashcardExpandAll">全部展開</button><button type="button" class="btn" id="flashcardCollapseAll">全部收合</button></div>
     <label for="flashcardSearch">關鍵字搜尋</label>
     <input id="flashcardSearch" type="search" placeholder="搜尋圖卡檔名…" aria-label="搜尋考點圖卡">
     <div class="cards-filter-row"><button class="btn flashcard-filter-fav" type="button" id="flashcardFavoriteOnly" aria-pressed="false">☆ 只看最愛（0）</button><span id="flashcardCount" class="flashcard-count"></span></div>
@@ -3737,7 +3753,7 @@ function flashcardUpdateDialogFavorite(item){
  button.disabled=!item;
  button.textContent=favorite?'★ 已加入最愛':'☆ 加入最愛';
  button.setAttribute('aria-pressed',String(favorite));
- button.setAttribute('aria-label',(favorite?'取消最愛：':'加入最愛：')+(item?flashcardLabel(item):''));
+ button.setAttribute('aria-label',(favorite?'取消最愛：':'加入最愛：')+(item?flashcardDisplayName(item):''));
 }
 function flashcardToggleFavorite(item){
  const k=flashcardKey(item);
@@ -3762,7 +3778,7 @@ function flashcardResetViewer(){
  el('flashcardEmptyViewer').hidden=false;
  el('flashcardFitControls').hidden=true;
  delete el('flashcardDisplay').dataset.media;
- el('flashcardDialogTitle').textContent='考點圖卡閱讀';el('flashcardPosition').textContent='尚未選擇';
+ el('flashcardDialogTitle').textContent='考點圖卡閱讀';el('flashcardDialogTitle').removeAttribute('title');el('flashcardPosition').textContent='尚未選擇';
  el('flashcardPrev').disabled=true;el('flashcardNext').disabled=true;
  flashcardUpdateDialogFavorite(null);
 }
@@ -3869,9 +3885,37 @@ async function flashcardRestoreSavedManifest(){
  }
  return false;
 }
+const flashcardFolderOpen=new Map();
+const FLASHCARD_FOLDER_LABELS={'ai-fundamentals':'人工智慧導論－基礎考點','ai-advanced':'人工智慧導論－進階考點','generative-ai-fundamentals':'生成式 AI－基礎考點','generative-ai-advanced':'生成式 AI－進階考點','supplementary':'補充考點'};
+function flashcardFolderOf(item){return flashcardKey(item).split('/').slice(0,-1).join('/');}
+function flashcardDisplayName(item){return flashcardFolderLabel(flashcardKey(item));}
+function flashcardFolderLabel(path){return path.split('/').map(part=>FLASHCARD_FOLDER_LABELS[part]||part).join(' / ');}
+function flashcardBuildTree(items){
+ const root={children:new Map(),items:[],count:0,path:''};
+ for(const item of items){
+  let node=root;node.count++;
+  const folders=flashcardFolderOf(item).split('/').filter(Boolean);
+  for(const part of folders){
+   if(!node.children.has(part))node.children.set(part,{children:new Map(),items:[],count:0,path:node.path?node.path+'/'+part:part});
+   node=node.children.get(part);node.count++;
+  }
+  node.items.push(item);
+ }
+ return root;
+}
 function flashcardRender(){
  const term=el('flashcardSearch').value.trim().toLocaleLowerCase();
- flashcardFiltered=flashcardItems.filter(item=>flashcardLabel(item).toLocaleLowerCase().includes(term)&&
+ const folderSelect=el('flashcardFolderFilter'),previous=folderSelect.value;
+ const folders=[...new Set(flashcardItems.flatMap(item=>{
+  const parts=flashcardFolderOf(item).split('/').filter(Boolean);
+  return parts.map((_,i)=>parts.slice(0,i+1).join('/'));
+ }))].sort((a,b)=>a.localeCompare(b,'en',{numeric:true}));
+ folderSelect.replaceChildren(new Option('全部圖卡',''));
+ for(const folder of folders)folderSelect.add(new Option(flashcardFolderLabel(folder),folder));
+ folderSelect.value=folders.includes(previous)?previous:'';
+ const scope=folderSelect.value;
+ flashcardFiltered=flashcardItems.filter(item=>(!scope||flashcardFolderOf(item)===scope||flashcardFolderOf(item).startsWith(scope+'/'))&&
+  (flashcardLabel(item)+' '+flashcardFolderLabel(flashcardFolderOf(item))).toLocaleLowerCase().includes(term)&&
   (!flashcardOnlyFavorites||flashcardFavorites.has(flashcardKey(item))));
  flashcardSyncFavorites();
  el('flashcardCount').textContent='符合 '+flashcardFiltered.length+'／'+flashcardItems.length+' 份';
@@ -3884,23 +3928,36 @@ function flashcardRender(){
   grid.append(empty);
  }else{
   const fragment=document.createDocumentFragment();
-  for(const item of flashcardFiltered){
+  const createEntry=item=>{
    const idx=flashcardItems.indexOf(item),k=flashcardKey(item);
    const viewed=Object.hasOwn(flashcardProgress.viewed,k),current=flashcardSelectedKey===k,last=flashcardProgress.lastViewed===k;
    const wrapper=document.createElement('div');wrapper.className='cards-nav-entry';
    const button=document.createElement('button');button.type='button';button.className='cards-nav-item'+(viewed?' viewed':'')+(current?' current':'');
-   button.dataset.flashcardIndex=String(idx);button.title=flashcardLabel(item);
+   button.dataset.flashcardIndex=String(idx);button.title=flashcardDisplayName(item);
    if(current)button.setAttribute('aria-current','true');
    const no=document.createElement('span');no.className='cards-nav-no';no.textContent=String(idx+1);
-   const name=document.createElement('span');name.className='cards-nav-name';name.textContent=flashcardKey(item)+(item.isPdf?' · PDF':'');
+   const name=document.createElement('span');name.className='cards-nav-name';name.textContent=item.file.name+(item.isPdf?' · PDF':'');
    button.append(no,name);
    if(viewed||last){const mark=document.createElement('span');mark.className='cards-nav-state';mark.textContent=last?'↩': '✓';mark.title=last?'上次看到':'已看過';button.append(mark);}
    const favorite=document.createElement('button');favorite.type='button';favorite.className='cards-nav-star';
    favorite.dataset.flashcardFavorite=String(idx);favorite.textContent=flashcardFavorites.has(k)?'★':'☆';
-   favorite.setAttribute('aria-label',(flashcardFavorites.has(k)?'取消最愛：':'加入最愛：')+flashcardLabel(item));
+   favorite.setAttribute('aria-label',(flashcardFavorites.has(k)?'取消最愛：':'加入最愛：')+flashcardDisplayName(item));
    favorite.setAttribute('aria-pressed',String(flashcardFavorites.has(k)));
-   wrapper.append(button,favorite);fragment.append(wrapper);
-  }
+   wrapper.append(button,favorite);return wrapper;
+  };
+  const appendTree=(node,parent)=>{
+   for(const item of node.items)parent.append(createEntry(item));
+   for(const [part,child] of node.children){
+    const details=document.createElement('details');details.className='cards-folder';details.dataset.folder=child.path;
+    details.open=term?true:(flashcardFolderOpen.get(child.path)??true);
+    const summary=document.createElement('summary');summary.textContent=(FLASHCARD_FOLDER_LABELS[part]||part)+' · '+child.count+' 張';
+    const content=document.createElement('div');content.className='cards-folder-content';
+    appendTree(child,content);details.append(summary,content);
+    details.addEventListener('toggle',()=>{if(details.isConnected&&!term)flashcardFolderOpen.set(child.path,details.open);});
+    parent.append(details);
+   }
+  };
+  appendTree(flashcardBuildTree(flashcardFiltered),fragment);
   grid.append(fragment);
  }
  // 新的篩選若不含目前圖卡，保留檔名及紀錄，但等待使用者從左側選擇。
@@ -3914,7 +3971,8 @@ function flashcardShow(item,mark=true){
  flashcardOpenIndex=flashcardFiltered.indexOf(item);
  if(flashcardOpenIndex<0)return;
  flashcardSelectedKey=flashcardKey(item);
- el('flashcardDialogTitle').textContent=flashcardLabel(item);
+ el('flashcardDialogTitle').textContent=flashcardDisplayName(item);
+ el('flashcardDialogTitle').title=flashcardDisplayName(item);
  el('flashcardPosition').textContent=(flashcardOpenIndex+1)+'／'+flashcardFiltered.length;
  el('flashcardEmptyViewer').hidden=true;
  const image=el('flashcardLargeImage'),pdf=el('flashcardPdfFrame'),openPdf=el('flashcardPdfOpen');
@@ -3928,7 +3986,7 @@ function flashcardShow(item,mark=true){
   openPdf.hidden=false;openPdf.href=item.url;
  }else{
   pdf.hidden=true;pdf.removeAttribute('src');openPdf.hidden=true;openPdf.removeAttribute('href');
-  image.hidden=false;image.src=item.url;image.alt=flashcardLabel(item);
+  image.hidden=false;image.src=item.url;image.alt=flashcardDisplayName(item);
  }
  el('flashcardPrev').disabled=flashcardFiltered.length<2;
  el('flashcardNext').disabled=flashcardFiltered.length<2;
@@ -3936,6 +3994,7 @@ function flashcardShow(item,mark=true){
  if(mark)flashcardMarkViewed(item);else flashcardRender();
  // 僅將左側選中的題號捲到可見範圍，不移動整個網頁。
  const selected=el('flashcardGrid').querySelector('.cards-nav-item.current');
+ for(let parent=selected?.parentElement;parent;parent=parent.parentElement){if(parent.tagName==='DETAILS'){parent.open=true;flashcardFolderOpen.set(parent.dataset.folder,true);}}
  if(selected){const side=el('cardsView').querySelector('.cards-study-sidebar');
   const r=selected.getBoundingClientRect(),p=side.getBoundingClientRect();
   if(r.top<p.top+14)side.scrollTop+=r.top-p.top-14;
@@ -3988,6 +4047,14 @@ el('flashcardFolderInput').onchange=event=>{
 };
 el('flashcardResume').onclick=flashcardResumeLast;
 el('flashcardSearch').oninput=flashcardRender;
+el('flashcardFolderFilter').onchange=flashcardRender;
+function flashcardSetAllFolders(open){
+ for(const details of el('flashcardGrid').querySelectorAll('details.cards-folder')){
+  flashcardFolderOpen.set(details.dataset.folder,open);details.open=open;
+ }
+}
+el('flashcardExpandAll').onclick=()=>flashcardSetAllFolders(true);
+el('flashcardCollapseAll').onclick=()=>flashcardSetAllFolders(false);
 el('flashcardFavoriteOnly').onclick=()=>{flashcardOnlyFavorites=!flashcardOnlyFavorites;flashcardRender();};
 el('flashcardGrid').onclick=event=>{
  const marker=event.target.closest('button[data-flashcard-favorite]');
