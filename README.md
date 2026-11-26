@@ -1,36 +1,51 @@
-# 輔考系統
+# iPAS 輔考系統
 
-目前使用 v24.9 單檔 HTML，原始 HTML 已改名為 `index.html`，可直接開啟。此目錄目前沒有 v23.7 檔案。
+v24.9 單檔網頁，搭配 v68 題庫（1,100 題）與 99 張圖卡。Git 儲存庫僅涵蓋本目錄。
 
-## 操作
+## 目錄結構
 
-1. 在此目錄執行 `python3 -m http.server 8000 --bind 127.0.0.1`，開啟 `http://localhost:8000/`。
-2. 點「載入 JSON 題庫」，選取本目錄的 `ipas-question-bank-v68.json`（1,100 題）。
-3. 切到考點圖卡，點「選取圖卡資料夾」，選取本目錄的 `考點圖卡/`，一次載入所有分類。
-4. 離開或更換環境前，匯出作答紀錄與圖卡紀錄備份；下次可透過對應匯入功能還原。
+```text
+exam-web/
+├── index.html
+├── README.md
+├── .github/workflows/pages.yml
+└── assets/
+    ├── question-banks/
+    │   └── ipas-question-bank-v68.json
+    └── flashcards/
+        ├── ai-fundamentals/             # 人工智慧導論基礎：28 張
+        ├── ai-advanced/                 # 人工智慧導論進階：17 張
+        ├── generative-ai-fundamentals/  # 生成式 AI 基礎：25 張
+        ├── generative-ai-advanced/      # 生成式 AI 進階：22 張
+        └── supplementary/              # 補充考點：7 張
+```
 
-系統會嘗試由 `考點圖卡/` 恢復上次載入的圖卡，並保留舊 `2_教材/考點圖卡/` 路徑作為備援。第一次使用或新增檔案後，仍應手動選取圖卡資料夾。
+資料夾採英文命名；每個分類內圖卡統一使用數字檔名 `1.webp`、`2.webp` 等。原本檔名帶編號者沿用該編號；補充考點依既有清單編為 1–7。舊檔名對照保存在 `index.html` 的 `FLASHCARD_FILE_ALIASES`，供歷史紀錄轉換。
 
-## 圖卡分類
+## 本機使用
 
-| 資料夾 | WebP 數量 |
-| --- | ---: |
-| [補充教材]人工智慧導論－基礎考點 | 28 |
-| [補充教材]人工智慧導論－進階考點 | 17 |
-| [補充教材]生成式AI－基礎考點 | 25 |
-| [補充教材]生成式AI－進階考點 | 22 |
-| 補充考點 | 7 |
-| 合計 | 99 |
+在此目錄執行：
 
-保留原始檔名，包含數字及英文名稱；圖卡名稱不一定連號。
+```bash
+python3 -m http.server 8000 --bind 127.0.0.1
+```
 
-## 教材連結限制
+1. 開啟 <http://localhost:8000/>。
+2. 點「載入 JSON 題庫」，選取 `assets/question-banks/ipas-question-bank-v68.json`。
+3. 切換到考點圖卡，點「選取圖卡資料夾」，選取 `assets/flashcards/`，一次載入全部分類。
 
-題庫 `displaySettings.pdfLinks` 指向 `../2_教材/`。若要啟用完整教材跳轉，需取得對應版本的 PDF 並依設定放置，或在確認頁碼後修改設定。本次整理未變更題庫內容、PDF 對照及作答儲存鍵。
+首次使用與新增檔案後仍需選取資料夾。後續會依上次清單嘗試從 `assets/flashcards/` 自動還原。舊中文分類、英文描述檔名的收藏、閱讀進度與匯入備份會轉換為新路徑；題庫 ID 和作答儲存鍵未改動。
 
+## 備份與來源
 
-## Git 與部署
+作答、收藏與圖卡進度保存在瀏覽器，不會自動回寫檔案。更換環境前，請分別匯出作答紀錄、圖卡收藏與進度。不同協定、主機或連接埠的儲存資料不共用。
 
-Git 儲存庫位於本目錄，只追蹤輔考網頁、題庫、圖卡及必要的部署設定；外層 `flash-cards/` 與專案說明不在追蹤範圍內。
+題庫包含歷屆整理與非官方模擬題，請參考各題驗證狀態。圖卡來自 `https://pub-cf806236d50445579e09cd2da6db1908.r2.dev/`，保留原作者內容；公開可讀不代表授權任意轉載。
 
-遠端：<https://github.com/iamso1/ipas-ai>。從本目錄執行 Git 指令。推送 `main` 會由 `.github/workflows/pages.yml` 發布目前目錄至 GitHub Pages；Pages Source 需設為 GitHub Actions。
+題庫的 PDF 連結仍指向原套件 `../2_教材/`，相關教材尚未完整提供，因此部分引用連結無法開啟；未將舊版教材頁碼直接套用到新版。
+
+## Git 與 GitHub Pages
+
+遠端：<https://github.com/iamso1/ipas-ai>。網站：<https://iamso1.github.io/ipas-ai/>。
+
+在本目錄操作 Git。推送 `main` 後，workflow 會將本目錄發布至 Pages；Source 設為 GitHub Actions。資產路徑採相對路徑，支援 `/ipas-ai/` 專案網址。線上使用時可先從 repo 下載 ZIP，解壓後選取題庫和圖卡；尚未加入首次自動載入資產功能。

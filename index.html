@@ -1169,10 +1169,10 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
    <div class="cards-folder-actions">
     <button type="button" class="btn primary" id="flashcardChoose">選取圖卡資料夾</button>
     <input id="flashcardFolderInput" type="file" webkitdirectory directory multiple hidden aria-label="選取考點圖卡資料夾">
-    <a class="flashcard-folder-link" id="flashcardFolderLink" href="考點圖卡/" target="_blank" rel="noopener noreferrer">📁 開啟資料夾</a>
+    <a class="flashcard-folder-link" id="flashcardFolderLink" href="assets/flashcards/" target="_blank" rel="noopener noreferrer">📁 開啟資料夾</a>
     <button type="button" class="btn" id="flashcardClear" hidden>清除圖卡預覽</button>
    </div>
-   <div class="cards-path"><strong>相對路徑：</strong><code>考點圖卡/</code></div>
+   <div class="cards-path"><strong>相對路徑：</strong><code>assets/flashcards/</code></div>
    <div class="flashcard-reading-progress" aria-label="圖卡瀏覽完成度">
     <div class="flashcard-reading-head"><strong id="flashcardProgressText">尚未記錄瀏覽進度</strong><span id="flashcardProgressRatio">—</span></div>
     <div class="bar"><div id="flashcardProgressBar" style="width:0%"></div></div>
@@ -1191,7 +1191,7 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
     <div class="flashcard-favorites-status"><span id="flashcardFavoriteStatus" role="status" aria-live="polite">最愛圖卡：0 份</span>
      <span class="flashcard-backup-actions"><button class="btn" id="flashcardExportFavorites" type="button">匯出圖卡紀錄</button><button class="btn" id="flashcardImportFavorites" type="button">匯入圖卡紀錄</button><input id="flashcardFavoritesFile" type="file" accept="application/json,.json" hidden aria-label="匯入考點圖卡收藏與瀏覽進度"></span>
     </div>
-    <p class="flashcard-help">首次使用請選取圖卡資料夾；之後會嘗試依上次清單自動從相對路徑載入。新增圖卡時再重新選取即可。也可開啟 <a id="flashcardParentFolderLink" href="考點圖卡/" target="_blank" rel="noopener noreferrer">圖卡資料夾</a>。</p>
+    <p class="flashcard-help">首次使用請選取圖卡資料夾；之後會嘗試依上次清單自動從相對路徑載入。新增圖卡時再重新選取即可。也可開啟 <a id="flashcardParentFolderLink" href="assets/flashcards/" target="_blank" rel="noopener noreferrer">圖卡資料夾</a>。</p>
    </div>
   </aside>
   <section class="card cards-study-main" aria-label="考點圖卡閱讀區">
@@ -3566,12 +3566,22 @@ const flashcardItems=[];
 let flashcardFiltered=[],flashcardOpenIndex=-1,flashcardOnlyFavorites=false,flashcardSelectedKey='';
 const FLASHCARD_IMAGE=/\.(?:png|jpe?g|webp|gif|bmp|svg|avif)$/i;
 const FLASHCARD_PDF=/\.pdf$/i;
+// Normalize old category paths so saved favorites, progress and backups survive folder renames.
+const FLASHCARD_CATEGORY_ALIASES={"[補充教材]人工智慧導論－基礎考點": "ai-fundamentals", "[補充教材]人工智慧導論－進階考點": "ai-advanced", "[補充教材]生成式AI－基礎考點": "generative-ai-fundamentals", "[補充教材]生成式AI－進階考點": "generative-ai-advanced", "補充考點": "supplementary"};
+const FLASHCARD_FILE_ALIASES={"generative-ai-advanced/AI adoption roadmap_ PoC to operations-21.webp": "generative-ai-advanced/21.webp", "generative-ai-advanced/APE limits_ data, metrics, and cost-3.webp": "generative-ai-advanced/3.webp", "generative-ai-advanced/Agent and tool integration cheatsheet-11.webp": "generative-ai-advanced/11.webp", "generative-ai-advanced/Bias Detection vs Mitigation_ Diagnose Then Repair-18.webp": "generative-ai-advanced/18.webp", "generative-ai-advanced/Data drift_ monitor, evaluate, update-10.webp": "generative-ai-advanced/10.webp", "generative-ai-advanced/Edge AI limits_ fast, local, constrained-17.webp": "generative-ai-advanced/17.webp", "generative-ai-advanced/Fine-tuning × RAG hybrid strategy-5.webp": "generative-ai-advanced/5.webp", "generative-ai-advanced/Graph Prompting_ Networks, Nodes, and Paths-2.webp": "generative-ai-advanced/2.webp", "generative-ai-advanced/Guardrails_ Protecting AI Inputs and Outputs-20.webp": "generative-ai-advanced/20.webp", "generative-ai-advanced/HA, Load Balancing, and Auto Scaling-15.webp": "generative-ai-advanced/15.webp", "generative-ai-advanced/Homomorphic Encryption vs Federated Learning-19.webp": "generative-ai-advanced/19.webp", "generative-ai-advanced/Knowledge Distillation_ Big Teacher, Small Student-7.webp": "generative-ai-advanced/7.webp", "generative-ai-advanced/MCP vs RAG_ Tools, Knowledge, Together-12.webp": "generative-ai-advanced/12.webp", "generative-ai-advanced/Multi-agent systems_ risks and guardrails-14.webp": "generative-ai-advanced/14.webp", "generative-ai-advanced/On-Premises vs. Cloud_ Governance Tradeoffs-16.webp": "generative-ai-advanced/16.webp", "generative-ai-advanced/PEFT_ Frozen models, flexible adapters-8.webp": "generative-ai-advanced/8.webp", "generative-ai-advanced/Prompt Injection Defense Cheat Sheet-4.webp": "generative-ai-advanced/4.webp", "generative-ai-advanced/RFT_ Rewards for better, safer answers-6.webp": "generative-ai-advanced/6.webp", "generative-ai-advanced/Real-Time vs Batch_ Speed vs Compliance-22.webp": "generative-ai-advanced/22.webp", "generative-ai-advanced/Small vs large models_ cost-performance tradeoffs-9.webp": "generative-ai-advanced/9.webp", "generative-ai-advanced/Solution Graphs_ Nodes, Routes, and State-13.webp": "generative-ai-advanced/13.webp", "generative-ai-advanced/Tree of Thoughts Study Guide-1.webp": "generative-ai-advanced/1.webp", "generative-ai-fundamentals/GPT-Realtime voice-to-voice applications guide-21.webp": "generative-ai-fundamentals/21.webp", "generative-ai-fundamentals/Generative AI vs. discriminative AI-1.webp": "generative-ai-fundamentals/1.webp", "generative-ai-fundamentals/How LLMs Predict the Next Token-2.webp": "generative-ai-fundamentals/2.webp", "generative-ai-fundamentals/MVP and vibe coding study cheatsheet-23.webp": "generative-ai-fundamentals/23.webp", "generative-ai-fundamentals/No-Code vs Low-Code cheat sheet-15.webp": "generative-ai-fundamentals/15.webp", "generative-ai-fundamentals/No-Code vs Low-Code user guide-16.webp": "generative-ai-fundamentals/16.webp", "generative-ai-fundamentals/Personal data de-identification cheat sheet-25.webp": "generative-ai-fundamentals/25.webp", "generative-ai-fundamentals/Prompt engineering vs fine-tuning-12.webp": "generative-ai-fundamentals/12.webp", "generative-ai-fundamentals/RAG basics_ retrieve first, then generate-13.webp": "generative-ai-fundamentals/13.webp", "generative-ai-fundamentals/ROI and TCO exam cheat sheet-27.webp": "generative-ai-fundamentals/27.webp", "generative-ai-fundamentals/Real-Time vs batch processing-20.webp": "generative-ai-fundamentals/20.webp", "generative-ai-fundamentals/Token Costs_ Input vs. Output-28.webp": "generative-ai-fundamentals/28.webp", "supplementary/AI Drift Reasoning Cheatsheet.webp": "supplementary/1.webp", "supplementary/K-Anonymity vs differential privacy guide.webp": "supplementary/2.webp", "supplementary/gradient-descent-optimizers.webp": "supplementary/3.webp", "supplementary/label-onehot-target.webp": "supplementary/4.webp", "supplementary/q-learning-dqn.webp": "supplementary/5.webp", "supplementary/sigmoid-softmax.webp": "supplementary/6.webp", "supplementary/vanishing-exploding-gradients.webp": "supplementary/7.webp"};
+function flashcardCanonicalKey(value){
+ const key=value.normalize('NFC');
+ const parts=key.split('/');
+ if(Object.hasOwn(FLASHCARD_CATEGORY_ALIASES,parts[0]))parts[0]=FLASHCARD_CATEGORY_ALIASES[parts[0]];
+ const normalized=parts.join('/');
+ return Object.hasOwn(FLASHCARD_FILE_ALIASES,normalized)?FLASHCARD_FILE_ALIASES[normalized]:normalized;
+}
 const flashcardLabel=item=>item.file.webkitRelativePath||item.file.name;
 // 去除資料夾選取時的頂層資料夾名，確保同一批圖卡重選時識別穩定。
 const flashcardKey=item=>{
  const path=flashcardLabel(item).replace(/\\/g,'/').replace(/^\.\//,'');
  const parts=path.split('/').filter(Boolean);
- return (parts.length>1?parts.slice(1).join('/'):parts.join('/')).normalize('NFC');
+ return flashcardCanonicalKey(parts.length>1?parts.slice(1).join('/'):parts.join('/'));
 };
 function flashcardCleanFavoriteData(raw){
  if(!raw||typeof raw!=='object'||raw.version!==1||!Array.isArray(raw.items))throw Error('圖卡最愛清單格式錯誤');
@@ -3579,7 +3589,7 @@ function flashcardCleanFavoriteData(raw){
  const clean=[];
  for(const item of raw.items){
   if(typeof item!=='string'||!item.trim()||item.length>400||/[\x00-\x1f]/.test(item))throw Error('圖卡最愛清單含無效檔名');
-  clean.push(item.normalize('NFC'));
+  clean.push(flashcardCanonicalKey(item));
  }
  return new Set(clean);
 }
@@ -3594,15 +3604,15 @@ function flashcardCleanProgress(raw){
  if(Object.keys(raw.viewed).length>10000)throw Error('圖卡瀏覽紀錄數量異常');
  for(const [k,v] of Object.entries(raw.viewed)){
   if(!validKey(k)||typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}T/.test(v)||!Number.isFinite(Date.parse(v)))throw Error('圖卡瀏覽日期或檔名不正確');
-  viewed[k.normalize('NFC')]=v;
+  viewed[flashcardCanonicalKey(k)]=v;
  }
  const manifest=[...new Set(raw.manifest.map(k=>{
-  if(!validKey(k))throw Error('圖卡清單含無效路徑');return k.normalize('NFC');
+  if(!validKey(k))throw Error('圖卡清單含無效路徑');return flashcardCanonicalKey(k);
  }))];
  const lastViewed=raw.lastViewed==null?'':raw.lastViewed;
  if(lastViewed&&!validKey(lastViewed))throw Error('最後閱讀圖卡的路徑不正確');
  const folderName=typeof raw.folderName==='string'&&raw.folderName.length<=180?raw.folderName:'';
- return {version:1,viewed,lastViewed:lastViewed.normalize('NFC'),manifest,folderName};
+ return {version:1,viewed,lastViewed:flashcardCanonicalKey(lastViewed),manifest,folderName};
 }
 function flashcardReadProgress(){
  try{const raw=localStorage.getItem(FLASHCARD_PROGRESS_KEY);return raw?flashcardCleanProgress(JSON.parse(raw)):flashcardEmptyProgress();}
@@ -3737,7 +3747,7 @@ function flashcardRelease(){
 // 不需要重新獲得檔案選取權限，也不會把圖片或 PDF 本體寫進 localStorage。
 // 本機 file:// 無法列舉資料夾，因此新加入的圖卡仍須重新選取一次才可更新清單。
 let flashcardRestoreToken=0;
-const FLASHCARD_RELATIVE_BASES=['考點圖卡/','2_教材/考點圖卡/','../2_教材/考點圖卡/'];
+const FLASHCARD_RELATIVE_BASES=['assets/flashcards/'];
 function flashcardSafeRelativeKey(key){
  if(typeof key!=='string'||!key||key.length>400||/[\x00-\x1f]/.test(key)||/[\\?#:]/.test(key))return false;
  return key.split('/').every(part=>part&&part!=='.'&&part!=='..');
@@ -3785,7 +3795,7 @@ async function flashcardRestoreFromManifest(){
   return true;
  }
  if(token===flashcardRestoreToken){
-  el('flashcardProgressNotice').textContent='已保留上次的圖卡進度，但在相對路徑找不到圖片。請確認 HTML 與 考點圖卡/ 的相對位置，或重新選取資料夾。';
+  el('flashcardProgressNotice').textContent='已保留上次的圖卡進度，但在相對路徑找不到圖片。請確認 HTML 與 assets/flashcards/ 的相對位置，或重新選取資料夾。';
  }
  return false;
 }
