@@ -24,6 +24,9 @@
 - 點「選取圖卡資料夾」可閱讀自己的本機圖片或 PDF；選取後只在瀏覽器內讀取，不會上傳到 repo。
 - 圖卡依資料夾分層，可逐層展開／收合，或使用「全部展開／全部收合」。
 - 「圖卡範圍」可選全部圖卡或單一資料夾（含子資料夾）；搜尋與只看最愛會在選取範圍內生效，左右翻頁也依此範圍切換。
+- 搜尋支援檔名、中文考點名稱、英文名稱與關鍵字，例如 `Softmax`、`LIME`、`目標編碼`；多個空白分隔詞須同時符合。
+- 開啟圖卡後展開「考點資訊與相關題目」，可看中英文名稱、關鍵字並跳至題目。題目下方的「相關考點圖卡」也可反向開啟圖卡。
+- 未載入題庫時，點選相關題目會先載入雲端題庫；已載入其他題庫時，僅開啟 ID 與題幹相符的題目，找不到則提示手動匯入。頁面跳轉保留既有答案及提交狀態。
 - 可收藏圖卡、查看閱讀進度，並接續上次閱讀位置。
 - 雲端匯入失敗時會顯示訊息，並保留已載入的圖卡。
 
@@ -45,6 +48,11 @@
 exam-web/                           # 本機 Git 儲存庫根目錄
 ├── index.html                      # HTML、CSS 與 JavaScript
 ├── README.md
+├── scripts/
+│   ├── flashcard-catalog.js         # 搜尋與反向題目索引
+│   ├── build-flashcard-links.py     # 重建題幹關聯
+│   ├── test-flashcard-catalog.cjs
+│   └── test-flashcard-links.py
 ├── .gitignore
 ├── .github/workflows/pages.yml      # main 推送後自動部署
 └── assets/
@@ -52,6 +60,7 @@ exam-web/                           # 本機 Git 儲存庫根目錄
     │   └── ipas-question-bank-v68.json
     └── flashcards/
         ├── manifest.json           # 雲端圖卡載入清單
+        ├── metadata.json           # 考點名稱、關鍵字、來源文字與題目關聯
         ├── ai-fundamentals/         # 人工智慧導論基礎：28 張
         ├── ai-advanced/             # 人工智慧導論進階：17 張
         ├── generative-ai-fundamentals/ # 生成式 AI 基礎：25 張
@@ -94,7 +103,8 @@ python3 -m http.server 8000 --bind 127.0.0.1
 1. 將圖片放入對應英文分類資料夾，使用未占用的數字檔名。
 2. 同步更新 `assets/flashcards/manifest.json` 的 `files` 陣列；路徑以圖卡根目錄為基準，例如 `supplementary/8.webp`。
 3. 若改名既有檔案，更新 `FLASHCARD_FILE_ALIASES`，避免收藏與進度失去對應。
-4. 更新 README 的圖卡數量；部署後點「匯入雲端圖卡」重新載入清單。
+4. 在 `metadata.json` 新增或更新對應圖卡資料與圖片 SHA-256，執行下方重建及檢查指令。
+5. 更新 README 的圖卡數量；部署後點「匯入雲端圖卡」重新載入清單。
 
 清單格式如下，僅為格式示例：
 
@@ -106,6 +116,34 @@ python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
 清單中的每個檔案都必須存在；發布時會包含整個儲存庫根目錄，新增檔案前請確認用途。
+
+## 考點 metadata 與題目關聯維護
+
+`assets/flashcards/metadata.json` 已涵蓋全部 99 張圖卡。名稱與關鍵字依圖片可見內容整理，本機 Apple Vision OCR 文字保存在 `sourceText` 作為查核輔助；OCR 文字不直接納入搜尋或題目配對，也不代表已驗證圖片內所有敘述正確。
+
+| 欄位 | 用途 |
+| --- | --- |
+| `id`、`path` | 穩定識別及相對圖片路徑 |
+| `titleZh`、`titleEn`、`keywords` | 中文名稱、英文名稱與搜尋關鍵字 |
+| `sha256`、`contentReview`、`sourceText` | 圖片版本及內容整理依據 |
+| `matchingTerms` | 題幹自動配對用的概念詞；應比搜尋關鍵字更精確 |
+| `curatedQuestionLinks` | 人工核對的題目 ID 與關聯理由 |
+| `relatedQuestions` | 重建程式產生的題目 ID、題幹摘要、配對詞、理由及核對狀態 |
+| `questionBank` | 題庫路徑、識別及 SHA-256 |
+
+目前有 **732 筆圖卡與題目的關聯**，其中 **26 筆已核對**，其餘標為「關鍵字建議」。自動建議只比對題幹，不使用選項、答案或解析，避免因錯誤選項提到考點而誤配。它們是相關閱讀入口，仍可能需要人工修正；UI 以相同標示區分兩類。
+
+反向連結及題目跳轉會比對題目 ID 與前 180 字題幹，避免同 ID 明顯改題時誤連。這是摘要核對，並非完整題目版本驗證。本機匯入圖片須路徑與 SHA-256 都符合索引才套用 metadata；自訂同名圖卡會保留原本檔名搜尋。
+
+更新名稱或搜尋詞可直接修改 metadata。更新題庫、配對詞或人工核對連結後，在儲存庫根目錄執行：
+
+```bash
+python3 scripts/build-flashcard-links.py
+node --test scripts/test-flashcard-catalog.cjs
+python3 scripts/test-flashcard-links.py
+```
+
+重建需要 Python 3.8 以上；檢查需要支援 `node:test` 的 Node.js（建議 18 以上），網站本身不需要這些執行環境。重建會檢查 manifest、圖片雜湊及人工連結 ID，並更新題庫雜湊與雙向關聯資料。測試涵蓋中英文搜尋、路徑與圖片一致性、題目改版及錯誤選項排除。
 
 ## Git 與部署
 

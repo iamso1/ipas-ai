@@ -1030,6 +1030,16 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
 #cardsView .cards-folder>summary:focus-visible{outline:2px solid var(--blue);outline-offset:-3px}
 #cardsView .cards-folder-content{padding:4px 5px 5px 10px;border-left:2px solid #dbe7f5;margin-left:9px}
 #cardsView .cards-folder-content .cards-folder{margin:5px 0}
+</style><style>
+.study-links{margin-top:10px;border:1px solid #d9e5f2;border-radius:10px;background:#fbfdff}
+.study-links>summary{cursor:pointer;padding:9px 11px;color:#254f7b;font-size:13px;font-weight:700}
+.study-link-info,.study-link-note,.study-link-list{margin:8px 11px;font-size:12px;line-height:1.6}
+.study-link-info strong{display:block;font-size:14px;color:#243d61}
+.study-link-note{color:#64748b}
+.study-link-list{display:grid;gap:6px;max-height:300px;overflow:auto}
+.study-link-list button{text-align:left;white-space:normal;font-size:12px;line-height:1.5;padding:8px 10px}
+.study-link-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.study-link-tags span{background:#eaf2fc;color:#315b88;border-radius:5px;padding:1px 6px}
 </style></head><body>
 <header>
   <div class="site-heading"><h1 id="bankTitle">通用題庫練習系統</h1><p id="bankSubtitle">請載入 JSON 題庫開始練習</p><p id="loadedBankName" role="status">目前題庫：尚未載入</p></div>
@@ -1199,9 +1209,10 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
     <select id="flashcardFolderFilter" aria-label="選擇圖卡資料夾"><option value="">全部圖卡</option></select>
     <div class="cards-folder-controls"><button type="button" class="btn" id="flashcardExpandAll">全部展開</button><button type="button" class="btn" id="flashcardCollapseAll">全部收合</button></div>
     <label for="flashcardSearch">關鍵字搜尋</label>
-    <input id="flashcardSearch" type="search" placeholder="搜尋圖卡檔名…" aria-label="搜尋考點圖卡">
+    <input id="flashcardSearch" type="search" placeholder="搜尋中文考點、英文名稱、關鍵字…" aria-label="搜尋圖卡檔名、考點中英文名稱與關鍵字">
     <div class="cards-filter-row"><button class="btn flashcard-filter-fav" type="button" id="flashcardFavoriteOnly" aria-pressed="false">☆ 只看最愛（0）</button><span id="flashcardCount" class="flashcard-count"></span></div>
    </div>
+   <p id="flashcardMetadataStatus" class="flashcard-help" role="status"></p>
    <div class="cards-nav-heading">圖卡清單 <span class="cards-nav-note">✓ 已看 · ★ 最愛 · 藍框目前</span></div>
    <div id="flashcardGrid" class="cards-nav-list" aria-label="考點圖卡題號與檔名" aria-live="polite"><div class="flashcard-empty"><strong>尚未載入圖卡</strong>可先選取「考點圖卡」資料夾。</div></div>
    <div class="cards-sidebar-foot">
@@ -1222,6 +1233,12 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
     <iframe id="flashcardPdfFrame" hidden title="考點圖卡 PDF 內嵌預覽"></iframe>
    </div>
    <div class="cards-main-footer"><button class="btn" id="flashcardPrev" type="button" disabled>← 上一張</button><button class="btn" id="flashcardNext" type="button" disabled>下一張 →</button></div>
+   <details id="flashcardRelatedPanel" class="study-links" hidden>
+    <summary id="flashcardRelatedSummary">考點資訊與相關題目</summary>
+    <div id="flashcardMetadataInfo" class="study-link-info"></div>
+    <p class="study-link-note">相關閱讀建議，非官方配對；關聯不代表本題答案。切換頁面不會提交或清除作答。</p>
+    <div id="flashcardRelatedQuestions" class="study-link-list"></div>
+   </details>
    <p class="cards-main-tip">點左側圖卡或按鍵盤 ←／→ 切換上一張／下一張；適應寬度時直接捲動網頁閱讀長圖。已開啟的圖卡會計入「已看過」；PDF 若無法在瀏覽器內顯示，可點「另開 PDF」。已看過不代表已熟練。</p>
   </section>
  </div>
@@ -1237,7 +1254,7 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
 <button class="btn" id="shuffle">隨機排序</button><button class="btn" id="ordered">依題號排序</button>
 <div id="progressLabel" class="progress-label" style="margin-top:16px"></div><div class="bar"><div id="progressBar"></div></div><p id="summary" class="summary"></p><div id="questionGrid" class="question-grid"></div>
 <p class="notice">綠：答對 · 紅：答錯 · 橙：未計分 · ★：收藏</p><button class="btn" id="export">匯出紀錄</button><button class="btn" id="import">匯入紀錄</button><input type="file" id="importFile" accept="application/json,.json" hidden><button class="btn" id="reset" style="margin-top:12px">清除作答紀錄</button><p id="storageNotice" class="notice" role="status"></p></aside>
-<section class="card"><div class="tools"><button class="btn primary" id="cloudBankImport" type="button">匯入雲端 JSON 題庫</button><button class="btn" id="loadBank">載入本機 JSON 題庫</button><input id="bankFile" type="file" accept=".json,application/json" hidden><input id="oldBankFile" type="file" accept=".json,application/json" hidden><span id="bankNotice" class="notice" role="status">請先載入 JSON 題庫</span><button class="btn" id="favorite">☆ 收藏</button><button class="btn" id="retry">重新作答本題</button><button class="btn" id="knowledgeReturn" type="button" hidden>← 返回知識補強</button><button class="recovery-link" id="compareOldBank" type="button" title="核對修改前 JSON 的題目、選項及答案，再安全找回舊紀錄">核對舊版 JSON／找回紀錄</button></div><span id="wrongDrillHint" hidden></span><div class="badge" id="number"></div><div id="question"></div><div id="options"></div><div id="feedback" class="feedback" aria-live="polite"></div><p class="shortcut-hint">←／→ 換題 · Alt+1～8 選項 · Alt+Enter 提交 · Alt+F 收藏</p><div class="actions"><div class="left-actions"><button class="btn" id="prev">← 上一題</button><button class="btn" id="next">下一題 →</button></div><button class="btn primary" id="check">提交答案</button></div><p class="notice" id="bankDisclaimer">答案與解析將於提交後顯示。</p></section><section id="wrongDrillWorkspace" class="drill-workspace" hidden aria-label="歷史錯題與收藏題專項練習">
+<section class="card"><div class="tools"><button class="btn primary" id="cloudBankImport" type="button">匯入雲端 JSON 題庫</button><button class="btn" id="loadBank">載入本機 JSON 題庫</button><input id="bankFile" type="file" accept=".json,application/json" hidden><input id="oldBankFile" type="file" accept=".json,application/json" hidden><span id="bankNotice" class="notice" role="status">請先載入 JSON 題庫</span><button class="btn" id="favorite">☆ 收藏</button><button class="btn" id="retry">重新作答本題</button><button class="btn" id="knowledgeReturn" type="button" hidden>← 返回知識補強</button><button class="recovery-link" id="compareOldBank" type="button" title="核對修改前 JSON 的題目、選項及答案，再安全找回舊紀錄">核對舊版 JSON／找回紀錄</button></div><span id="wrongDrillHint" hidden></span><div class="badge" id="number"></div><div id="question"></div><div id="options"></div><details id="questionFlashcardsPanel" class="study-links" hidden><summary id="questionFlashcardsSummary">相關考點圖卡</summary><p class="study-link-note">依考點整理的相關閱讀，非官方配對；不代表答案提示。</p><div id="questionFlashcardsList" class="study-link-list"></div></details><div id="feedback" class="feedback" aria-live="polite"></div><p class="shortcut-hint">←／→ 換題 · Alt+1～8 選項 · Alt+Enter 提交 · Alt+F 收藏</p><div class="actions"><div class="left-actions"><button class="btn" id="prev">← 上一題</button><button class="btn" id="next">下一題 →</button></div><button class="btn primary" id="check">提交答案</button></div><p class="notice" id="bankDisclaimer">答案與解析將於提交後顯示。</p></section><section id="wrongDrillWorkspace" class="drill-workspace" hidden aria-label="歷史錯題與收藏題專項練習">
  <div class="drill-shell">
   <aside class="drill-side panel" aria-label="專項練習設定與題號導覽">
    <div class="drill-side-heading">專項練習設定</div>
@@ -1289,7 +1306,10 @@ header { align-items:center; column-gap:24px; row-gap:15px; padding:19px clamp(2
    <span id="wrongDrillRoundTitle" hidden></span>
   </section>
  </div>
-</section></main><script>
+</section></main><script src="scripts/flashcard-catalog.js"></script><script>
+let flashcardCatalog=null,flashcardCatalogPromise=null,flashcardCatalogStatus='idle';
+const flashcardVerifiedLocal=new WeakSet();
+
 let quiz=[],byId=new Map();
 const examLabels={'11411-1':'114/11 科目一：人工智慧基礎概論','11411-2':'114/11 科目二：生成式 AI 應用與規劃','11503-1':'115/03 科目一：人工智慧基礎概論','11503-2':'115/03 科目二：生成式 AI 應用與規劃'};
 let KEY='ipas-local-v2-empty',activeBankId='';
@@ -2284,6 +2304,7 @@ function ipasMatchesQuestion(q,words){
 function filtered(q){if(!ipasMatchesQuestion(q,ipasSearchWords(el('practiceKeyword').value)))return false;if(el('exam').value!=='all'&&q.details.Exam!==el('exam').value)return false;if(state.topic!=='all'&&resolvedTopicForQuestion(q)!==state.topic)return false;switch(state.mode){case'wrong':return status(q)==='wrong';case'star':return state.stars.includes(q.number);case'unanswered':return !state.submitted.includes(q.number);case'different':return /^[A-H]+$/.test(q.suggested)&&!same(q.correctAnswers,q.suggested.split(''));default:return true;}}
 function refreshView(){view=state.order.filter(n=>filtered(byId.get(n)));if(!view.includes(state.current))state.current=view[0]||null;}
 function render(update=false,scrollNav=true){if(update)refreshView();el('mode').value=state.mode;el('source').value=state.source;const q=byId.get(state.current);el('options').replaceChildren();el('feedback').replaceChildren();el('feedback').classList.remove('show');
+renderQuestionFlashcards(q);
 const scope=quiz.filter(q=>(el('exam').value==='all'||q.details.Exam===el('exam').value)&&(state.topic==='all'||resolvedTopicForQuestion(q)===state.topic));
 const completed=scope.filter(q=>state.submitted.includes(q.number)),scored=completed.filter(q=>key(q)),correct=scored.filter(q=>status(q)==='done').length;
 el('progressLabel').textContent=`已提交 ${completed.length} / ${scope.length} 題`;el('progressBar').style.width=(scope.length?completed.length/scope.length*100:0)+'%';el('summary').textContent=`答對 ${correct}／計分 ${scored.length} · 答對率 ${scored.length?Math.round(correct/scored.length*100):0}% · 未計分 ${completed.length-scored.length} · 未作答 ${scope.length-completed.length}`;
@@ -3778,7 +3799,7 @@ function flashcardResetViewer(){
  el('flashcardEmptyViewer').hidden=false;
  el('flashcardFitControls').hidden=true;
  delete el('flashcardDisplay').dataset.media;
- el('flashcardDialogTitle').textContent='考點圖卡閱讀';el('flashcardDialogTitle').removeAttribute('title');el('flashcardPosition').textContent='尚未選擇';
+ el('flashcardDialogTitle').textContent='考點圖卡閱讀';el('flashcardDialogTitle').removeAttribute('title');el('flashcardRelatedPanel').hidden=true;el('flashcardPosition').textContent='尚未選擇';
  el('flashcardPrev').disabled=true;el('flashcardNext').disabled=true;
  flashcardUpdateDialogFavorite(null);
 }
@@ -3888,7 +3909,7 @@ async function flashcardRestoreSavedManifest(){
 const flashcardFolderOpen=new Map();
 const FLASHCARD_FOLDER_LABELS={'ai-fundamentals':'人工智慧導論－基礎考點','ai-advanced':'人工智慧導論－進階考點','generative-ai-fundamentals':'生成式 AI－基礎考點','generative-ai-advanced':'生成式 AI－進階考點','supplementary':'補充考點'};
 function flashcardFolderOf(item){return flashcardKey(item).split('/').slice(0,-1).join('/');}
-function flashcardDisplayName(item){return flashcardFolderLabel(flashcardKey(item));}
+function flashcardDisplayName(item){const card=flashcardMetadataFor(item);return card?flashcardFolderLabel(flashcardFolderOf(item))+' / '+card.titleZh+' / '+item.file.name:flashcardFolderLabel(flashcardKey(item));}
 function flashcardFolderLabel(path){return path.split('/').map(part=>FLASHCARD_FOLDER_LABELS[part]||part).join(' / ');}
 function flashcardBuildTree(items){
  const root={children:new Map(),items:[],count:0,path:''};
@@ -3915,7 +3936,7 @@ function flashcardRender(){
  folderSelect.value=folders.includes(previous)?previous:'';
  const scope=folderSelect.value;
  flashcardFiltered=flashcardItems.filter(item=>(!scope||flashcardFolderOf(item)===scope||flashcardFolderOf(item).startsWith(scope+'/'))&&
-  (flashcardLabel(item)+' '+flashcardFolderLabel(flashcardFolderOf(item))).toLocaleLowerCase().includes(term)&&
+  flashcardMatchesSearch(item,term)&&
   (!flashcardOnlyFavorites||flashcardFavorites.has(flashcardKey(item))));
  flashcardSyncFavorites();
  el('flashcardCount').textContent='符合 '+flashcardFiltered.length+'／'+flashcardItems.length+' 份';
@@ -3936,7 +3957,7 @@ function flashcardRender(){
    button.dataset.flashcardIndex=String(idx);button.title=flashcardDisplayName(item);
    if(current)button.setAttribute('aria-current','true');
    const no=document.createElement('span');no.className='cards-nav-no';no.textContent=String(idx+1);
-   const name=document.createElement('span');name.className='cards-nav-name';name.textContent=item.file.name+(item.isPdf?' · PDF':'');
+   const name=document.createElement('span');name.className='cards-nav-name';name.textContent=item.file.name+(flashcardMetadataFor(item)?' · '+flashcardMetadataFor(item).titleZh:'')+(item.isPdf?' · PDF':'');
    button.append(no,name);
    if(viewed||last){const mark=document.createElement('span');mark.className='cards-nav-state';mark.textContent=last?'↩': '✓';mark.title=last?'上次看到':'已看過';button.append(mark);}
    const favorite=document.createElement('button');favorite.type='button';favorite.className='cards-nav-star';
@@ -3973,6 +3994,7 @@ function flashcardShow(item,mark=true){
  flashcardSelectedKey=flashcardKey(item);
  el('flashcardDialogTitle').textContent=flashcardDisplayName(item);
  el('flashcardDialogTitle').title=flashcardDisplayName(item);
+ renderFlashcardRelations(item);
  el('flashcardPosition').textContent=(flashcardOpenIndex+1)+'／'+flashcardFiltered.length;
  el('flashcardEmptyViewer').hidden=true;
  const image=el('flashcardLargeImage'),pdf=el('flashcardPdfFrame'),openPdf=el('flashcardPdfOpen');
@@ -4023,7 +4045,7 @@ function flashcardDownloadFavorites(){
 el('flashcardCloudImport').onclick=async()=>{
  const button=el('flashcardCloudImport');
  button.disabled=true;button.textContent='匯入中…';
- try{await flashcardRestoreFromManifest(true);}
+ try{await flashcardRestoreFromManifest(true);await flashcardLoadMetadata();}
  finally{button.disabled=false;button.textContent='匯入雲端圖卡';}
 };
 el('flashcardChoose').onclick=()=>el('flashcardFolderInput').click();
@@ -4044,6 +4066,7 @@ el('flashcardFolderInput').onchange=event=>{
  flashcardSaveProgress();el('flashcardProgressNotice').textContent='';
  el('flashcardSearch').value='';el('flashcardToolbar').hidden=false;el('flashcardClear').hidden=false;
  flashcardRender();flashcardPreviewLastWithoutChangingProgress();
+ void flashcardVerifyLocalMetadata();
 };
 el('flashcardResume').onclick=flashcardResumeLast;
 el('flashcardSearch').oninput=flashcardRender;
@@ -4097,9 +4120,114 @@ el('flashcardFavoritesFile').onchange=async event=>{
  }catch(err){alert('圖卡紀錄匯入失敗：'+err.message);}
  event.target.value='';
 };
+function flashcardMetadataFor(item){
+ if(!item||!flashcardCatalog||(item.objectUrl&&!flashcardVerifiedLocal.has(item)))return null;
+ return flashcardCatalog.get(flashcardKey(item));
+}
+function flashcardMatchesSearch(item,term){
+ const fallback=flashcardLabel(item)+' '+flashcardFolderLabel(flashcardFolderOf(item));
+ return flashcardMetadataFor(item)?flashcardCatalog.matches(flashcardKey(item),term,fallback):
+  term.split(/\s+/).filter(Boolean).every(word=>fallback.toLocaleLowerCase().includes(word));
+}
+async function flashcardLoadMetadata(){
+ if(flashcardCatalogPromise)return flashcardCatalogPromise;
+ flashcardCatalogStatus='loading';
+ el('flashcardMetadataStatus').textContent='正在載入考點搜尋索引…';
+ flashcardCatalogPromise=(async()=>{
+  const path='assets/flashcards/metadata.json';
+  const remote='https://raw.githubusercontent.com/iamso1/ipas-ai/main/'+path;
+  for(const url of location.protocol==='file:'?[remote]:[path,remote]){
+   try{
+    const response=await fetch(url,{cache:'no-cache'});if(!response.ok)throw Error('metadata unavailable');
+    const catalog=new FlashcardCatalog(await response.json());flashcardCatalog=catalog;flashcardCatalogStatus='ready';
+    el('flashcardMetadataStatus').textContent='考點索引已就緒，可搜尋中英文名稱與關鍵字。';
+    await flashcardVerifyLocalMetadata();flashcardRender();
+    const item=flashcardItems.find(x=>flashcardKey(x)===flashcardSelectedKey);
+    if(item){renderFlashcardRelations(item);el('flashcardDialogTitle').textContent=flashcardDisplayName(item);el('flashcardDialogTitle').title=flashcardDisplayName(item);}
+    renderQuestionFlashcards(byId.get(state.current));return true;
+   }catch(_){}
+  }
+  flashcardCatalogStatus='failed';flashcardCatalogPromise=null;
+  el('flashcardMetadataStatus').textContent='考點索引無法載入，目前仍可搜尋檔名；重新匯入雲端圖卡可重試。';
+  return false;
+ })();return flashcardCatalogPromise;
+}
+async function flashcardVerifyLocalMetadata(){
+ if(!flashcardCatalog||!globalThis.crypto?.subtle)return;
+ const token=flashcardRestoreToken;
+ await Promise.all(flashcardItems.filter(item=>item.objectUrl&&item.file instanceof Blob&&!flashcardVerifiedLocal.has(item)).map(async item=>{
+  const meta=flashcardCatalog.get(flashcardKey(item));if(!meta?.sha256)return;
+  try{
+   const digest=await crypto.subtle.digest('SHA-256',await item.file.arrayBuffer());
+   const hash=[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('');
+   if(token===flashcardRestoreToken&&hash===meta.sha256)flashcardVerifiedLocal.add(item);
+  }catch(_){}
+ }));
+ if(token===flashcardRestoreToken){flashcardRender();const item=flashcardItems.find(x=>flashcardKey(x)===flashcardSelectedKey);if(item)renderFlashcardRelations(item);}
+}
+function studyLinkButton(text,action){const button=document.createElement('button');button.type='button';button.className='btn';button.textContent=text;button.onclick=action;return button;}
+function renderFlashcardRelations(item){
+ const card=flashcardMetadataFor(item),panel=el('flashcardRelatedPanel');panel.hidden=!card;
+ if(!card)return;
+ const info=el('flashcardMetadataInfo');info.replaceChildren();
+ const title=document.createElement('strong');title.textContent=card.titleZh;
+ const english=document.createElement('div');english.textContent=card.titleEn;
+ const tags=document.createElement('div');tags.className='study-link-tags';
+ for(const word of card.keywords){const tag=document.createElement('span');tag.textContent=word;tags.append(tag);}
+ info.append(title,english,tags);
+ const list=el('flashcardRelatedQuestions');list.replaceChildren();
+ el('flashcardRelatedSummary').textContent='考點資訊與相關題目（'+card.relatedQuestions.length+'）';
+ if(!card.relatedQuestions.length){list.textContent='目前沒有已建立的相關題目。';return;}
+ let shown=0;
+ const appendMore=()=>{
+  list.querySelector('[data-more-questions]')?.remove();
+  for(const link of card.relatedQuestions.slice(shown,shown+12)){
+   const label=link.reviewStatus==='reviewed'?'已核對':'關鍵字建議';
+   const button=studyLinkButton(link.questionId+' · '+label+'｜'+link.questionTitle,()=>studyOpenQuestion(link));
+   button.title=link.reason||'題幹匹配：'+link.matchedTerms.join('、');list.append(button);
+  }
+  shown=Math.min(shown+12,card.relatedQuestions.length);
+  if(shown<card.relatedQuestions.length){const more=studyLinkButton('顯示更多（尚有 '+(card.relatedQuestions.length-shown)+' 題）',appendMore);more.dataset.moreQuestions='true';list.append(more);}
+ };
+ appendMore();
+ if(!quiz.length){const note=document.createElement('p');note.className='study-link-note';note.textContent='點選題目時會先匯入雲端題庫，再開啟該題。';list.prepend(note);}
+}
+function renderQuestionFlashcards(q){
+ const panel=el('questionFlashcardsPanel');if(!panel)return;
+ const list=el('questionFlashcardsList');list.replaceChildren();
+ const matches=q&&flashcardCatalog?flashcardCatalog.forQuestion(q.details['Question ID'],q.question):[];
+ panel.hidden=!matches.length;
+ el('questionFlashcardsSummary').textContent='相關考點圖卡（'+matches.length+'）';
+ for(const {card,link} of matches){
+  const button=studyLinkButton(card.titleZh+'｜'+card.titleEn+' · '+(link.reviewStatus==='reviewed'?'已核對':'關鍵字建議'),()=>studyOpenCard(card.path));
+  button.title=link.reviewStatus==='reviewed'?link.reason:'題幹匹配：'+link.matchedTerms.join('、');list.append(button);
+ }
+}
+async function studyOpenQuestion(link){
+ const find=()=>quiz.find(q=>q.details['Question ID']===link.questionId&&q.question.slice(0,180)===link.questionTitle);
+ let q=find();
+ if(!q&&!quiz.length){await el('cloudBankImport').onclick();q=find();}
+ if(!q){el('flashcardMetadataStatus').textContent='目前題庫未包含此版本題目，請先匯入雲端 JSON 題庫再試。';return;}
+ if(wrongDrillVisible)closeWrongDrill();
+ knowledgeReturnPoint=null;el('knowledgeReturn').hidden=true;
+ state.exam=q.details.Exam;state.mode='all';state.topic='all';state.current=q.number;
+ el('exam').value=state.exam;el('practiceKeyword').value='';refreshPracticeTopics();el('topic').value='all';
+ render(true);showPage('practice');
+ el('question').scrollIntoView({block:'nearest'});
+}
+async function studyOpenCard(path){
+ let item=flashcardItems.find(x=>!x.objectUrl&&flashcardKey(x)===path);
+ if(!item){if(!await flashcardRestoreFromManifest(true))return;item=flashcardItems.find(x=>flashcardKey(x)===path);}
+ if(!item)return;
+ flashcardOnlyFavorites=false;el('flashcardSearch').value='';el('flashcardFolderFilter').value='';
+ showPage('cards');flashcardRender();flashcardShow(item);
+ el('flashcardRelatedPanel').open=true;
+ el('flashcardDialogTitle').scrollIntoView({block:'nearest'});
+}
 flashcardRender();
 // 優先載入 repo 圖卡清單；離線時嘗試上次清單，並保留手動選取功能。
 void flashcardRestoreFromManifest();
+void flashcardLoadMetadata();
 
 updateCountdown();setInterval(updateCountdown,1000);
 
